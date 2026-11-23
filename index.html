@@ -540,8 +540,8 @@ function csEvents(m,y,C){C=C||csCust();const ev=[];
   csSk().filter(l=>+l.m===m).forEach(l=>{const mt=/(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(l.tg||''),d=mt?mt[3]+'-'+pad2(+mt[2])+'-'+pad2(+mt[1]):y+'-'+pad2(m)+'-01';ev.push({d,k:'sk',l,nodate:!mt,key:y+'|sk|'+l.id})});
   return ev.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:a.k<b.k?-1:1)}
 const csDn=e=>e.k==='sk'?csSt(e)[1]==='ok':!!(CS[e.key]||{}).done;
-const CSKH_K=['Cà phê cuối tuần'];
-function csSk(){const src=(me.r==='sales'||me.r==='mgr')?evMine():PL.filter(l=>l.hth===TT&&plOK(l.th)&&bml(l.th));return src.filter(l=>l.camp||CSKH_K.includes(l.kenh))}
+const CSKH_RE=/ch[ăa]m s[óo]c kh[áa]ch h[àa]ng|c[àa] ph[êe] cu[ốo]i tu[ầa]n|cafe cu[ốo]i tu[ầa]n/i;
+function csSk(){const src=(me.r==='sales'||me.r==='mgr')?evMine():PL.filter(l=>l.hth===TT&&plOK(l.th)&&bml(l.th));return src.filter(l=>l.camp||CSKH_RE.test((l.kenh||'')+' '+(l.sp||'')))}
 function skSt(e){const l=e.l,T=csToday();if(l.st==='Hủy')return['Hủy','bad'];if(l.st==='Đã hoàn thành'||(l.kq&&(l.kq.q!==''||(l.kq.ds||[]).length)))return['Đã hoàn thành','ok'];if(e.nodate)return['Trong tháng',''];return e.d<T?['Đã qua','']:e.d===T?['Hôm nay','warn']:e.d<=addD(T,7)?['Sắp tới','warn']:['Chưa tới','']}
 function csSt(e){if(e.k==='sk')return skSt(e);const t=csToday(),x=CS[e.key];if(x&&x.done)return['Đã chăm sóc','ok'];return e.d<t?['Quá hạn','bad']:e.d===t?['Hôm nay','warn']:e.d<=addD(t,7)?['Sắp tới','warn']:['Chưa tới','']}
 function csSoon(){const t=new Date(),y=t.getFullYear(),m=t.getMonth()+1,T=csToday(),E=[...csEvents(m,y,customers.filter(c=>bmc(c.th)&&vis(c))),...(m<12?csEvents(m+1,y,customers.filter(c=>bmc(c.th)&&vis(c))):[])];return E.filter(e=>e.d>=T&&e.d<=addD(T,7)&&!csDn(e)&&!(e.k==='sk'&&e.nodate))}
