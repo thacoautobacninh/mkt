@@ -20,7 +20,7 @@ nav button{all:unset;box-sizing:border-box;display:block;width:100%;padding:10px
 nav button:hover{background:rgba(255,255,255,.08)}
 nav button.on{background:rgba(255,255,255,.16);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
 nav button:focus-visible,.btn:focus-visible,.seg button:focus-visible{outline:2px solid #ffb300;outline-offset:1px}
-.org{padding:14px 16px;border-top:1px solid rgba(255,255,255,.12);font-weight:600;display:flex;gap:10px;align-items:center}
+.org{padding:12px 14px;border-top:1px solid rgba(255,255,255,.12);font-weight:600;display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}.org #who{flex:1;min-width:0;line-height:1.25;font-size:13px}.org #syn{order:3;width:100%;margin:0!important;font-size:11px!important;font-weight:500;opacity:.85}.org .orgb{order:4;width:100%;display:flex;gap:6px}.org .orgb .btn{flex:1;padding:6px 8px;white-space:nowrap;background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
 .org i{font-style:normal;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:11px}
 main{flex:1;min-width:0;display:flex;flex-direction:column}
 .bdg{background:#dc2626;color:#fff;border-radius:10px;padding:0 7px;font-size:11px;font-weight:700;margin-left:6px}.ms{position:relative}.ms summary{list-style:none;cursor:pointer;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);min-width:170px;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ms summary::-webkit-details-marker{display:none}.ms summary:after{content:' ▾';float:right}.ms .pn{position:absolute;z-index:30;top:calc(100% + 4px);left:0;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;min-width:210px;max-height:420px;overflow:auto;box-shadow:0 6px 18px rgba(0,0,0,.18)}.ms .pn label{display:flex;gap:8px;align-items:center;justify-content:flex-start;padding:4px 6px;cursor:pointer;margin:0;white-space:nowrap;font-weight:400}.ms .pn input{width:16px;min-width:0;flex:none;margin:0;padding:0}
@@ -86,7 +86,7 @@ dialog input,dialog select{width:100%}
   <div class="logo" style="font-size:20px;line-height:1.2">THACO AUTO<br>Bắc Ninh</div>
   <div class="brand"><select id="brand" aria-label="Thương hiệu"></select></div>
   <nav id="nav"></nav>
-  <div class="org"><i>BN</i><span id="who">THACO AUTO Bắc Ninh</span><button class="btn" id="pw" title="Đổi mật khẩu" style="margin-left:auto;padding:3px 8px;background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">🔑 Đổi MK</button><button class="btn" id="out" style="margin-left:6px;padding:3px 8px;background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Thoát</button></div>
+  <div class="org"><i>BN</i><span id="who">THACO AUTO Bắc Ninh</span><div class="orgb"><button class="btn" id="pw" title="Đổi mật khẩu">🔑 Đổi mật khẩu</button><button class="btn" id="out">Thoát</button></div></div>
 </aside>
 <main>
   <div class="top" id="top"></div>
