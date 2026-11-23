@@ -904,7 +904,7 @@ function printDoc(id){const c=costs.find(x=>x.id===id);if(!okA(c))return toast('
 /* Tờ trình tháng */
 const TB=['THACO AUTO','KIA','MAZDA','PEUGEOT','BMW','Xe QSD','Xe Tải Bus','DVPT DL','DVPT Tải Bus'],CARB=TB.slice(1,7),HT=['Marketing trực tiếp','Marketing trực tuyến'];
 const tbOf=t=>t==='THACO AUTO'?t:t==='DVPT xe Du lịch'?'DVPT DL':t==='DVPT xe Tải Bus'?'DVPT Tải Bus':['MINI','JEEP','RAM'].includes(t)?'Xe QSD':t==='Xe Tải'||t==='Xe Bus'?'Xe Tải Bus':t;
-const plOK=b=>me.r==='admin'||(me.r==='marketing'&&myB().some(x=>tbOf(x)===b));
+const plOK=b=>me.r==='admin'||(me.r==='marketing'&&(b==='THACO AUTO'||myB().some(x=>tbOf(x)===b)));
 let PL=[],plId=1,KP={},INV={};
 const mkL=(m,sr,th,hth,dx,kenh,sp,khqt,tg,sl,dvt,dg,cty,pbh)=>PL.push({id:plId++,m,sr:'Showroom '+sr,th,hth,dx,kenh,sp,mt:'Thu hút KHQT',khqt,tg,sl,dvt,dg,cty,pbh});
 const TR='Marketing trực tuyến',TT='Marketing trực tiếp';
@@ -1022,7 +1022,7 @@ function plPaste(){const d=$('#dlg2');d.style.width='min(680px,94vw)';d.innerHTM
 document.addEventListener('change',e=>{const el=e.target;if(el.dataset.sf){f[el.dataset.sf]=el.value;return render()}if(el.id==='ksel'){f.ks=el.value;return render()}if(el.id==='ttd'){f.nl=el.value||undefined;return render()}if(el.dataset.kp){const [m,sr,b,k]=el.dataset.kp.split('|'),key=m+'|'+sr+'|'+b;KP[key]=KP[key]||{};KP[key][k]=el.value.trim()===''?'':num(el.value)}if(el.dataset.tx){const [b,k]=el.dataset.tx.split('|'),m=f.m||11,key=m+'|'+b;TXM[key]=TXM[key]||JSON.parse(JSON.stringify(txGet(m,b)));TXM[key][k]=el.value.split('\n').map(x=>x.trim()).filter(Boolean)}});
 const EST=['Kế hoạch','Đang triển khai','Đã hoàn thành','Hủy'],KTT=['Quan tâm','Hẹn lái thử','Đã lái thử','Đã ký hợp đồng','Không nhu cầu'];
 const evSt=l=>l.st||((l.kq&&(l.kq.q!==''||l.kq.hd!==''||l.kq.ds.length))?'Đã hoàn thành':'Kế hoạch');
-function evData(){const m=f.m||11,all=f.ep==='Cả năm',evB=t=>plOK(t)&&(brand==='Tất cả thương hiệu'||(brand==='Tất cả xe du lịch'&&CARB.slice(0,5).includes(t))||(brand==='Tất cả xe thương mại'&&t==='Xe Tải Bus')||(brand==='Tất cả DVPT'&&(t==='DVPT DL'||t==='DVPT Tải Bus'))||tbOf(brand)===t),
+function evData(){const m=f.m||11,all=f.ep==='Cả năm',evB=t=>plOK(t)&&(t==='THACO AUTO'||brand==='Tất cả thương hiệu'||(brand==='Tất cả xe du lịch'&&CARB.slice(0,5).includes(t))||(brand==='Tất cả xe thương mại'&&t==='Xe Tải Bus')||(brand==='Tất cả DVPT'&&(t==='DVPT DL'||t==='DVPT Tải Bus'))||tbOf(brand)===t),
   q=(f.eq||'').trim().toLowerCase();
   return PL.filter(l=>l.hth===TT&&evB(l.th)&&(all||l.m===m)&&(!f.esr||l.sr===f.esr||l.sr===CTY)&&(!f.est||evSt(l)===f.est)&&(!f.eloai||(l.kenh||'Sự kiện')===f.eloai)&&(!q||[l.kenh,l.sp,l.th,l.dx,l.tg].join(' ').toLowerCase().includes(q)))}
 const evkOf=id=>EVK.filter(e=>String(e.ev)===String(id)&&!e.hid);
@@ -1059,7 +1059,7 @@ function evExport(kind){const ev=evData(),per=f.ep==='Cả năm'?'ca-nam':'thang
 
 /* ===== Tư vấn bán hàng / quản lý: nhập khách hàng vào sự kiện do admin hoặc marketing thương hiệu tạo ===== */
 const mySR=()=>me.r==='mgr'?(me.sr||''):((TV.find(t=>t.u===me.u)||{}).sr||''),evSrc=()=>SBON?EVP:PL.filter(l=>l.hth===TT);
-function evMine(){const sr=mySR(),B=me.r==='sales'?myB():[];return evSrc().filter(l=>(!sr||srN(l.sr)===sr)&&(!B.length||B.includes(l.th)))}
+function evMine(){const sr=mySR(),B=me.r==='sales'?myB():[];return evSrc().filter(l=>(!sr||l.sr===CTY||srN(l.sr)===sr)&&(!B.length||l.th==='THACO AUTO'||B.includes(l.th)||B.includes(l.hieu)||B.some(b=>tbOf(b)===l.th)))}
 const evkVis=e=>!e.hid&&(me.r==='sales'?e.tv===me.u:true);
 function evSales(){
   const mo=f.sm===undefined?String(new Date().getMonth()+1):f.sm,tab=f.set||'Sự kiện',q=(f.eq||'').trim().toLowerCase(),A=evMine(),
