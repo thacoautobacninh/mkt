@@ -86,7 +86,7 @@ table,td,th{-webkit-user-select:text;user-select:text}</style>
   <div class="logo" style="font-size:20px;line-height:1.2">THACO AUTO<br>Bắc Ninh</div>
   <div class="brand"><select id="brand" aria-label="Thương hiệu"></select></div>
   <nav id="nav"></nav>
-  <div class="org"><i>BN</i><span id="who">THACO AUTO Bắc Ninh</span><div class="orgb"><button class="btn" id="pw" title="Đổi mật khẩu">🔑 Đổi mật khẩu</button><button class="btn" id="out">Thoát</button></div></div>
+  <div class="org"><i>BN</i><span id="who">THACO AUTO Bắc Ninh</span><div class="orgb"><button class="btn" id="pw" title="Đổi mật khẩu">🔑 Đổi mật khẩu</button><button class="btn" id="bell" title="Thông báo khi có khách hàng mới được chia" style="display:none">🔔 Thông báo</button><button class="btn" id="out">Thoát</button></div></div>
 </aside>
 <main>
   <div class="top" id="top"></div>
@@ -752,6 +752,27 @@ function enh(){const key0=(typeof view!=='undefined'?view:'')+'|'+(typeof tab!==
  t.addEventListener('click',e=>{if(e.target.closest('select,button,input,textarea,a'))return;const c=e.target.closest('td,th');if(!c||c.parentNode.classList.contains('tsf'))return;if(String(getSelection())!=='')return;const i=c.cellIndex;if(c.tagName==='TD'&&String(sel.value)===String(i))return;if(sel.querySelector('option[value="'+i+'"]')){sel.value=i;apply();if(c.tagName==='TH')q.focus()}});
  q.addEventListener('input',apply);sel.addEventListener('change',apply);clr.onclick=()=>{q.value='';apply();q.focus()};bar.append(sel,q,clr,cnt);w.parentNode.insertBefore(bar,w);apply()})}
 obs=new MutationObserver(run);obs.observe(body,{childList:true});run()})();
+
+/* Thông báo khi có khách hàng / data mới được chia cho tư vấn (và quản lý showroom, giám đốc KD thương hiệu xem được) */
+(function(){const K=()=>'mkt_seen_'+(me&&me.u),LS=()=>{try{return localStorage}catch(e){return null}};
+const rd=()=>{try{return JSON.parse(LS().getItem(K())||'null')}catch(e){return null}},wr=a=>{try{LS().setItem(K(),JSON.stringify(a))}catch(e){}};
+const has=()=>me&&(me.r==='sales'||me.r==='mgr');
+const mine=()=>!has()?[]:LD.filter(l=>l.tv&&(me.r==='sales'?l.tv===me.u:scU(l.tv)));
+const kk=l=>String(l.id!=null?l.id:l.sdt);
+const perm=()=>('Notification' in window)?Notification.permission:'none';
+function say(t,b){try{if(perm()!=='granted')return;if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(r=>{if(r)r.showNotification(t,{body:b,icon:'icon-192.png',badge:'icon-192.png',tag:'mkt-new',renotify:true});else new Notification(t,{body:b})}).catch(()=>{});else new Notification(t,{body:b})}catch(e){}}
+let base=document.title,cnt=0;
+function banner(t,b){let d=$('#ntb');if(!d){d=document.createElement('div');d.id='ntb';d.style.cssText='position:fixed;top:12px;right:12px;z-index:99999;max-width:min(360px,92vw);background:#0b3d91;color:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.3);cursor:pointer;font-size:14px;line-height:1.4';document.body.appendChild(d)}
+ d.innerHTML='<b>🔔 '+esc(t)+'</b><div style="opacity:.9;margin-top:3px;font-size:13px">'+esc(b)+'</div>';d.style.display='block';d.onclick=()=>{d.style.display='none';cnt=0;document.title=base;go('leads')};clearTimeout(d._t);d._t=setTimeout(()=>{d.style.display='none'},15000)}
+function check(){if(!has())return;const L=mine(),seen=rd();if(!seen){wr(L.map(kk));return}const S=new Set(seen),nw=L.filter(l=>!S.has(kk(l)));wr(L.map(kk));if(!nw.length)return;
+ const nm=nw.slice(0,3).map(l=>l.kh||l.t||l.sdt).filter(Boolean).join(', ')+(nw.length>3?' …':'');
+ const t=me.r==='sales'?'Bạn vừa được chia '+nw.length+' khách hàng mới':'Có '+nw.length+' khách hàng mới vừa được chia cho tư vấn';
+ const b=me.r==='sales'?nm:nm+' · '+[...new Set(nw.map(l=>(tvOf(l.tv)||{}).n).filter(Boolean))].slice(0,3).join(', ');
+ banner(t,b);say(t,b);cnt+=nw.length;document.title='('+cnt+') '+base;if(view==='leads'&&!busyUI())render()}
+function bell(){const b=$('#bell');if(!b)return;b.style.display=has()&&('Notification' in window)?'':'none';const on=perm()==='granted';b.textContent=on?'🔔 Đã bật thông báo':'🔔 Bật thông báo';b.onclick=async()=>{if(perm()==='granted'){banner('Thông báo đang bật','Bạn sẽ nhận thông báo khi có khách hàng mới được chia.');return}if(perm()==='denied'){banner('Thông báo đang bị chặn','Mở cài đặt trình duyệt/ứng dụng → Thông báo → cho phép trang này.');return}try{await Notification.requestPermission()}catch(e){}bell();if(perm()==='granted'){say('Đã bật thông báo','Bạn sẽ nhận thông báo khi có khách hàng mới được chia.')}}}
+window.mktNotifyCheck=check;
+setInterval(()=>{if(!has()){document.title=base;return}bell();if(typeof SYN!=='undefined'&&SYN.on&&(SYN.pulling||!SYN.rev))return;if(typeof SBON!=='undefined'&&SBON&&!(SYN.on))return;check()},4000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){cnt=0;document.title=base}})})();
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&!e.altKey&&(e.key==='f'||e.key==='F')){const i=document.querySelector('#tcq')||document.querySelector('.tsb input')||document.querySelector('#body #q');if(i){e.preventDefault();i.focus();i.select()}}},true);
 const ndList=()=>{const m=new Map(),isLg=(n,u)=>!n||(!/\s/.test(n)&&[u.u,u.lg].filter(Boolean).map(x=>String(x).toLowerCase()).includes(n.toLowerCase())),add=u=>{const n=(u.n||'').trim();if(isLg(n,u)||m.has(n))return;m.set(n,{n,l:'Marketing'})};if(me&&me.r==='marketing')add(me);USERS.filter(u=>u.r==='marketing'&&(u.st||'')!=='khoa').forEach(add);return [...m.values()]};
 const NDX=['Nguyễn Hồng Việt','Đoàn Minh Ngọc'],DD=[...SR],DDL={'Showroom Bắc Giang':'Showroom Bắc Giang','Showroom Võ Cường':'Địa điểm kinh doanh số 1 - Bắc Ninh','Showroom Lạng Sơn':'Địa điểm kinh doanh số 4 - Lạng Sơn','Showroom Cao Bằng':'Địa điểm kinh doanh số 6 - Cao Bằng'};
